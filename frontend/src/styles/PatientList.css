@@ -1,0 +1,56 @@
+
+.patient-container {
+    width: 90%;
+    margin: auto;
+    text-align: left; 
+    margin-top: 30px; 
+    
+  }
+  
+  .search-bar {
+    width: 30%;
+    padding: 8px;
+    margin-top: 8px ;
+    margin-bottom: 20px;
+    border: 1px solid #dbc7c7;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .patient-table {
+    width: 60%;
+    border-collapse: collapse;
+  }
+  
+  .patient-table th, .patient-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .patient-table th {
+    background-color: #A0F3F8; 
+    font-weight: bold;
+    padding: 15px;
+    text-align: left;
+  }
+  
+  .patient-table tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
+  .medical-btn {
+    background-color: #5dc1b9;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s ease;
+  }
+  
+  .medical-btn:hover {
+    background-color: #4ba7a0;
+  }
+  
