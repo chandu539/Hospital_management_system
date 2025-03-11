@@ -124,6 +124,16 @@ router.get("/profile", authMiddleware, async (req, res) => {
   }
 });
 
+// GET all doctors
+router.get("/", async (req, res) => {
+  try {
+    const doctors = await Doctor.find().select("name _id");
+    res.json(doctors);
+  } catch (error) {
+    console.error("Error fetching doctors:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 
 module.exports = router;
