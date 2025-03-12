@@ -12,14 +12,14 @@ import PatientList from "./pages/PatientList";
 import Patients from "./pages/patients";
 import NewPatient from "./pages/NewPatient";
 import Appointments from "./pages/Appointments";
-import MedicalRecords from "./pages/MedicalRecord";
+import MedicalRecords from "./pages/MedicalRecords";
 import Settings from "./pages/Settings";
 import Billing from "./pages/Billing";
 import Availability from "./pages/Availability";
 import Notifications from "./pages/Notifications";
 import Doctors from "./pages/Doctors";
 import PrescriptionPage from "./pages/PrescriptionPage";
-// import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 
 

@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const Doctor = require("../models/Doctor");
 const { authMiddleware, logout } = require("../middleware/authMiddleware");
+const Prescription = require("../models/prescription");
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -132,6 +133,31 @@ router.get("/", async (req, res) => {
   } catch (error) {
     console.error("Error fetching doctors:", error);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+//post the prescription data to database
+// @route POST /api/doctors/add/prescription
+router.post("/add/prescription", async (req, res) => {
+  try {
+    const newPrescription = new Prescription(req.body);
+    await newPrescription.save();
+    res.status(201).json({ message: "Prescription added successfully" });
+  } catch (error) {
+    console.error("Error adding prescription:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+// Fetch all prescription records
+router.get("/get/prescriptions", async (req, res) => {
+  try {
+    const prescriptions = await Prescription.find();
+    res.status(200).json(prescriptions);
+  } catch (error) {
+    console.error("Error fetching prescriptions:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
