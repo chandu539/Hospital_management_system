@@ -8,12 +8,13 @@ const jwt = require("jsonwebtoken"); // Import JWT
 const connectDB = require("./config/db"); // Import database connection
 const doctorRoutes = require("./routes/doctorRoutes");
 const patientRoutes = require("./routes/patientRoutes");
+const AvailabilityRoutes = require("./routes/AvailabilityRoutes"); //import route for doctor availability
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:5173" })); 
+app.use(cors());         
 app.use(cookieParser());
 
 // Multer for File Uploads
@@ -31,6 +32,7 @@ const upload = multer({ storage });
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
+app.use("/api/availability", AvailabilityRoutes);
 
 // Connect to MongoDB and Start Server
 connectDB().then(() => {
