@@ -1,0 +1,26 @@
+/* Status badges */
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.status-badge.scheduled {
+    background-color: #28a745;
+    /* Green */
+    color: white;
+}
+
+.status-badge.pending {
+    background-color: #ffc107;
+    /* Yellow */
+    color: black;
+}
+
+.status-badge.canceled {
+    background-color: #dc3545;
+    /* Red */
+    color: white;
+}
