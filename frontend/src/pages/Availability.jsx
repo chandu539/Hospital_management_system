@@ -98,22 +98,35 @@ const Availability = () => {
   };
 
   const saveAvailability = async () => {
-    const availableSlots = Object.keys(availability).filter((slot) => availability[slot]);
-  
+    const availableSlots = Object.keys(availability).filter(
+      (slot) => availability[slot]
+    );
+
     console.log("Saving availability with data:", {
       doctorName,
       date: selectedDate,
       availableSlots,
     });
-  
+
     try {
-      const response = await axios.post("http://localhost:5000/api/availability", {
-        doctorName,
-        date: selectedDate,
-        availableSlots,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/availability",
+        {
+          doctorName,
+          date: selectedDate,
+          availableSlots,
+        }
+      );
       console.log("Response from server:", response.data);
       alert("Availability saved successfully!");
+
+      // Reset all states to their initial values
+      setDoctorName("");
+      setSelectedDate("");
+      setStartTime("10:00 AM");
+      setEndTime("5:00 PM");
+      setTimeSlots([]);
+      setAvailability({});
     } catch (error) {
       console.error("Error saving availability:", error);
       alert("Error saving availability.");
@@ -124,17 +137,16 @@ const Availability = () => {
     <div className="container mt-5">
       <style>
         {`
-            .dashboard-title {
-  font-size: 2rem; 
-  font-weight: bold;
-  color: #2c3e50; 
-  text-align: center;
-  margin-bottom: 20px; 
-  font-family: 'Arial', sans-serif; 
-  text-transform: uppercase; 
-  letter-spacing: 1.5px; 
-}
-
+          .dashboard-title {
+            font-size: 2rem; 
+            font-weight: bold;
+            color: #2c3e50; 
+            text-align: center;
+            margin-bottom: 20px; 
+            font-family: 'Arial', sans-serif; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+          }
 
           .form {
             display: flex;
@@ -155,34 +167,29 @@ const Availability = () => {
           }
 
           .input-label {
-  display: block;
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 8px;
-  color: #4a4a4a;
- margin-right: 15px;
-}
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #4a4a4a;
+            margin-right: 15px;
+          }
 
+          .input-field {
+            font-size: 1rem;
+            border: 1px solid grey;
+          }
 
-.input-field {
-  
-
-  font-size: 1rem;
-
-  border: 1px solid grey;
- 
-}
-
-.time-slot-heading {
-  font-size: 2rem; 
-  font-weight: bold;
-  color: #2c3e50; 
-  text-align: center;
-  margin-bottom: 20px; 
-  font-family: 'Arial', sans-serif; 
-  text-transform: uppercase; 
-  letter-spacing: 1.5px; 
-}
+          .time-slot-heading {
+            font-size: 2rem; 
+            font-weight: bold;
+            color: #2c3e50; 
+            text-align: center;
+            margin-bottom: 20px; 
+            font-family: 'Arial', sans-serif; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+          }
 
           .slot-card {
             display: inline-block;
@@ -217,7 +224,6 @@ const Availability = () => {
             display: flex;
             justify-content: center;
             gap: 10px; 
-         
           }
 
           .generate-btn, .save-btn {
@@ -234,11 +240,8 @@ const Availability = () => {
           }
 
           .time-slots {
-           
             padding: 20px;
-           
             margin-left: 70px;
-            
           }
 
           /* Custom Styling to Reduce Input Field Size */
@@ -246,9 +249,6 @@ const Availability = () => {
             font-size: 0.9rem;
             padding: 0.375rem 0.75rem;
           }
-          
-
-
         `}
       </style>
 
@@ -282,6 +282,7 @@ const Availability = () => {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
+            min={new Date().toISOString().split("T")[0]} 
           />
         </div>
 
@@ -321,6 +322,7 @@ const Availability = () => {
           </div>
         </div>
       </div>
+
       <div className="button-container">
         <button className="btn btn-md generate-btn" onClick={generateTimeSlots}>
           Generate Time Slots
@@ -330,8 +332,8 @@ const Availability = () => {
       {timeSlots.length > 0 && (
         <div className="time-slots">
           <h3 className="time-slot-heading">
-  Time Slots for {doctorName} on {selectedDate}
-</h3>
+            Time Slots for {doctorName} on {selectedDate}
+          </h3>
 
           <div className="d-flex flex-wrap justify-content-start">
             {timeSlots.map((slot, index) => (
