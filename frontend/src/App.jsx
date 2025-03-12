@@ -18,6 +18,7 @@ import Billing from "./pages/Billing";
 import Availability from "./pages/Availability";
 import Notifications from "./pages/Notifications";
 import Doctors from "./pages/Doctors";
+import PrescriptionPage from "./pages/PrescriptionPage";
 
 
 
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/billing" element={<Billing/>}/>
           <Route path="/availability" element={<Availability/>}/>
           <Route path="/notifications" element={<Notifications/>}/> 
+          <Route path="/prescription" element={<PrescriptionPage/>}/>
         </Routes>
       </div>
     </Router>

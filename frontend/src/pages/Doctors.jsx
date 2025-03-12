@@ -103,7 +103,6 @@ function Doctors() {
       });
       alert(" Doctor Profile uploaded successfully");
       navigate("/profile");
-
     } catch (error) {
       console.error("Error uploading profile", error);
       alert("Failed to upload profile");

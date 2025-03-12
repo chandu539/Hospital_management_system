@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../styles/PatientDetail.css"; 
 
 const PatientDetail = () => {
   const { id } = useParams();
   const [patient, setPatient] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/patients/${id}`)
@@ -24,7 +26,15 @@ const PatientDetail = () => {
       <p><strong>Address:</strong> {patient.address || "N/A"}</p>
       <p><strong>Blood Group:</strong> {patient.bloodGroup || "N/A"}</p>
       <p><strong>Medical History:</strong> {patient.medicalHistory || "N/A"}</p>
-      <button className="add-prescription-btn">add prescription</button>
+      <button
+                  
+                  onClick={(e) => {
+                    
+                    navigate('/prescription');
+                  }}
+                >
+                  Add Prescription
+                </button>
     </div>
   );
   
