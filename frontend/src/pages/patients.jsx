@@ -62,15 +62,6 @@ const Patients = () => {
       >
         <FaFileMedical /> Medical Records
       </button>
-
-      <button
-        style={styles.button}
-        onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
-        onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-        onClick={() => navigate("/newpatient")}
-      >
-        <FaUserPlus /> Add New Patient
-      </button>
     </div>
   );
 };
