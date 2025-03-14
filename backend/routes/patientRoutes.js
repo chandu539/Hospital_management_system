@@ -1,30 +1,31 @@
-const express = require("express");
+const express = require('express');
+const Patient = require('../models/Patient');
+
 const router = express.Router();
 
-// get all patients
-router.get("/", async (req, res) => {
+// 📌 Fetch all patients
+router.get('/', async (req, res) => {
     try {
-      const patients = await Patient.find();
-      res.status(200).json(patients);
+        const patients = await Patient.find();
+        res.json(patients);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch patients", details: error.message });
+        res.status(500).json({ message: 'Error fetching patients', error });
     }
-  });
+});
 
-// get patient detials by id
-router.get("/:id", async (req, res) => {
+// 📌 Fetch a single patient by ID
+router.get('/:id', async (req, res) => {
     try {
-      const patient = await Patient.findById(req.params.id);
-      
-      if (!patient) {
-        return res.status(404).json({ message: "Patient not found" });
-      }
-  
-      res.json(patient);
+        const patient = await Patient.findById(req.params.id);
+        if (!patient) {
+            return res.status(404).json({ message: 'Patient not found' });
+        }
+        res.json(patient);
     } catch (error) {
-      console.error("Error fetching patient:", error);
-      res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: 'Error fetching patient', error });
     }
-  });
-  
+});
+
+
+
 module.exports = router;

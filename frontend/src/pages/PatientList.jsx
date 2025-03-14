@@ -1,129 +1,155 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const PatientList = () => {
   const [patients, setPatients] = useState([]);
-  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/patients").then((response) => {
-      setPatients(response.data);
-    });
+    const fetchPatients = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/patients");
+        setPatients(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch patients");
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
   }, []);
-
-  const filteredPatients = patients.filter((patient) =>
-    patient.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Internal CSS styles
-  const styles = {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      minHeight: "100vh",
-      background: "#f8f9fa",
-      padding: "20px",
-    },
-    title: {
-      color: "#007bff",
-      marginBottom: "20px",
-    },
-    searchBar: {
-      width: "50%",
-      padding: "10px",
-      marginBottom: "20px",
-      border: "1px solid #ccc",
-      borderRadius: "5px",
-      fontSize: "16px",
-    },
-    table: {
-      width: "80%",
-      maxWidth: "900px",
-      borderCollapse: "collapse",
-      background: "white",
-      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-      borderRadius: "10px",
-      overflow: "hidden",
-    },
-    thTd: {
-      padding: "12px",
-      textAlign: "center",
-      borderBottom: "1px solid #ddd",
-    },
-    th: {
-      backgroundColor: "#007bff",
-      color: "white",
-    },
-    rowHover: {
-      cursor: "pointer",
-    },
-    button: {
-      backgroundColor: "#48f0dc",
-      color: "white",
-      padding: "8px 12px",
-      border: "none",
-      borderRadius: "5px",
-      cursor: "pointer",
-      fontSize: "14px",
-      transition: "0.3s",
-    },
-    buttonHover: {
-      backgroundColor: "#40d9c7",
-    },
-  };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Patient List</h2>
-      <input
-        type="text"
-        placeholder="🔍 Search..."
-        style={styles.searchBar}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={{ ...styles.thTd, ...styles.th }}>Name</th>
-            <th style={{ ...styles.thTd, ...styles.th }}>Gender</th>
-            <th style={{ ...styles.thTd, ...styles.th }}>Date of Birth</th>
-            <th style={{ ...styles.thTd, ...styles.th }}>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPatients.map((patient) => (
-            <tr
-              key={patient._id}
-              style={styles.rowHover}
-              onClick={() => navigate(`/patients/${patient._id}`)}
-            >
-              <td style={styles.thTd}>{patient.name}</td>
-              <td style={styles.thTd}>{patient.gender}</td>
-              <td style={styles.thTd}>{patient.dateOfBirth}</td>
-              <td style={styles.thTd}>
-                <button
-                  style={styles.button}
-                  onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
-                  onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent row click from triggering
-                    navigate(`/medicalrecords/${patient._id}`);
-                  }}
-                >
-                  Medical Records
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div style={styles.card}>
+        <h2 style={styles.title}>Patient List</h2>
+        {loading && <p style={styles.loading}>Loading...</p>}
+        {error && <p style={styles.error}>{error}</p>}
+        {!loading && !error && patients.length > 0 ? (
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Name</th>
+                <th style={styles.th}>Gender</th>
+                <th style={styles.th}>Date of Birth</th>
+                <th style={styles.th}>Contact</th>
+                <th style={styles.th}>Address</th>
+                <th style={styles.th}>Blood Group</th>
+                <th style={styles.th}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patients.map((patient) => (
+                <tr key={patient._id} style={styles.row}>
+                  <td style={styles.td} >{patient.name}</td>
+                  <td style={styles.td}>{patient.gender}</td>
+                  <td style={styles.td}>{new Date(patient.dateOfBirth).toLocaleDateString()}</td>
+                  <td style={styles.td}>{patient.contact}</td>
+                  <td style={styles.td}>{patient.address}</td>
+                  <td style={styles.td}>{patient.bloodGroup}</td>
+                  <td style={styles.td}>
+                    <button style={styles.button} onClick={() => navigate('/prescription')}>Add Prescription</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p style={styles.noRecords}>No patient records found.</p>
+        )}
+      </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    padding: "20px",
+    background: "#f8f9fa",
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  card: {
+    maxWidth: "1100px",
+    width: "100%",
+    background: "#fff",
+    padding: "20px",
+    boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)",
+    borderRadius: "10px",
+  },
+  title: {
+    textAlign: "center",
+    fontSize: "24px",
+    fontWeight: "bold",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    marginTop: "10px",
+    borderRadius: "10px",
+    overflow: "hidden",
+  },
+  th: {
+    background: "#48f0dc",
+    color: "#333",
+    padding: "12px",
+    textAlign: "left",
+    fontWeight: "bold",
+  },
+  td: {
+    padding: "12px",
+    borderBottom: "1px solid #ddd",
+    textAlign: "left",
+  },
+  row: {
+    transition: "background 0.3s",
+  },
+  rowHover: {
+    background: "#e6f9f6",
+  },
+  link: {
+    color: "#007bff",
+    cursor: "pointer",
+    textDecoration: "underline",
+    fontWeight: "bold",
+  },
+  button: {
+    background: "#10B981",
+    color: "#fff",
+    padding: "8px 12px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    transition: "0.3s",
+    fontSize: "14px",
+  },
+  buttonHover: {
+    background: "#059669",
+  },
+  loading: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: "18px",
+  },
+  error: {
+    textAlign: "center",
+    color: "red",
+    fontWeight: "bold",
+    fontSize: "18px",
+  },
+  noRecords: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: "18px",
+  },
 };
 
 export default PatientList;

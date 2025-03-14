@@ -9,6 +9,7 @@ const connectDB = require("./config/db"); // Import database connection
 const doctorRoutes = require("./routes/doctorRoutes");
 const patientRoutes = require("./routes/patientRoutes");
 const AvailabilityRoutes = require("./routes/AvailabilityRoutes"); //import route for doctor availability
+const appointmentRoutes = require('./routes/appointmentRoutes');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/doctors", doctorRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
 app.use("/api/availability", AvailabilityRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // Connect to MongoDB and Start Server
 connectDB().then(() => {
