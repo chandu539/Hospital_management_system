@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
+
 
 const Availability = () => {
   const [doctorName, setDoctorName] = useState("");
@@ -10,6 +12,7 @@ const Availability = () => {
   const [timeSlots, setTimeSlots] = useState([]);
   const [availability, setAvailability] = useState({});
   const [doctorList, setDoctorList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDoctorList = async () => {
@@ -226,7 +229,7 @@ const Availability = () => {
             gap: 10px; 
           }
 
-          .generate-btn, .save-btn {
+          .generate-btn, .save-btn, .view-btn{
             width: auto;
             background-color: #48f0dc;
             font-size: 14px;
@@ -234,7 +237,7 @@ const Availability = () => {
             margin-bottom: 20px;
           }
 
-          .generate-btn:hover, .save-btn:hover {
+          .generate-btn:hover, .save-btn:hover, .view-btn:hover {
             background-color: #45c4b5; /* Slightly darker shade */
             border-color: #45c4b5;
           }
@@ -253,7 +256,14 @@ const Availability = () => {
       </style>
 
       <h2 className="dashboard-title">Doctor Availability Status</h2>
-
+      <div className="button-container">
+      <button
+  className="btn btn-md view-btn"
+  onClick={() => navigate("/viewSlot")}
+>
+  View Slots
+</button>
+</div>
       {/* Doctor Dropdown */}
       <div className="form">
         <div className="input-group">

@@ -18,7 +18,7 @@ import Billing from "./pages/Billing";
 import Availability from "./pages/Availability";
 import Notifications from "./pages/Notifications";
 import Doctors from "./pages/Doctors";
-
+import ViewSlot from "./pages/viewSlots";
 
 
 
@@ -48,6 +48,7 @@ const App = () => {
           <Route path="/billing" element={<Billing/>}/>
           <Route path="/availability" element={<Availability/>}/>
           <Route path="/notifications" element={<Notifications/>}/> 
+          <Route path="/viewSlot" element={<ViewSlot />} />
         </Routes>
       </div>
     </Router>
