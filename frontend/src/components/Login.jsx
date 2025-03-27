@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import io from "socket.io-client";
+
+// Connect to Socket.io server
+const socket = io("http://localhost:5001");
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Clean up socket connection on unmount
+    return () => socket.disconnect();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,15 +30,17 @@ const Login = () => {
       console.log("✅ Login successful", response.data);
       alert("Login successful!");
 
-      // Store token if received
       if (response.data.token && response.data.user) {
+        // Store the token and user data
         localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user data properly
-      }
-      
+        localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      // Redirect to Profile page
-      navigate("/profile");
+        // ✅ Emit socket event with logged-in user’s name
+        socket.emit("doctor-logged-in", { name: response.data.user.name });
+
+        // Redirect to profile
+        navigate("/profile");
+      }
     } catch (error) {
       console.error("❌ Login error:", error.response?.data?.error || error.message);
       setMessage(error.response?.data?.error || "Login failed");
