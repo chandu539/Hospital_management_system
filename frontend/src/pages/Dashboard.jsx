@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Table } from "react-bootstrap";
 import { Line } from "react-chartjs-2";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,6 +25,20 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
+  const [patients, setPatients] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const navigate = useNavigate(); // Hook for navigation
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/patients")
+      .then(response => setPatients(response.data))
+      .catch(error => console.error("Error fetching patients:", error));
+
+    axios.get("http://localhost:5000/api/appointments")
+      .then(response => setAppointments(response.data))
+      .catch(error => console.error("Error fetching appointments:", error));
+  }, []);
+
   const chartData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
@@ -51,17 +67,20 @@ const Dashboard = () => {
           <h4 style={styles.heading}>Dashboard</h4>
         </Col>
       </Row>
-      
+
       {/* Stats Cards */}
       <Row>
         {[
-          { title: "Total Patients", value: "579", change: "+15%" },
-          { title: "Total Appointments", value: "54", change: "+10%" },
+          { title: "Total Patients", value: patients.length, change: "+15%", route: "/patientlist" },
+          { title: "Total Appointments", value: appointments.length, change: "+10%", route: "/appointments" },
           { title: "Total Income", value: "$8,399.24", change: "+28%" },
           { title: "Total Treatments", value: "112", change: "+12%" },
         ].map((item, idx) => (
           <Col key={idx} md={3}>
-            <Card style={styles.statCard}>
+            <Card 
+              style={styles.statCard} 
+              onClick={() => item.route && navigate(item.route)} // Navigate on click
+            >
               <h6>{item.title}</h6>
               <h4>{item.value}</h4>
               <span style={styles.greenText}>{item.change}</span>
@@ -82,19 +101,20 @@ const Dashboard = () => {
           <Card style={styles.card}>
             <h5>Appointment List</h5>
             <Table borderless>
+              <thead>
+                <tr style={styles.tableHeader}>
+                  <th>Name</th>
+                  <th>Mobile</th>
+                  <th>Gender</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
               <tbody>
-                {[
-                  { name: "Shailendra Gautam", type: "Allergy Testing", time: "10:30 AM" },
-                  { name: "Henry", type: "Blood Testing", time: "11:30 AM" },
-                  { name: "Chandu", type: "Typhoid Testing", time: "12:30 PM" },
-                  { name: "Hary Brook", type: "X-ray Testing", time: "1:30 PM" },
-                  { name: "Brooklyn Simmons", type: "CBC Testing", time: "2:30 PM" },
-                  { name: "Courtney Henry", type: "Lab Test", time: "3:00 PM" },
-                  { name: "Sarah Miller", type: "Chronic Care", time: "4:00 PM" },
-                ].map((appt, idx) => (
+                {appointments.map((appt, idx) => (
                   <tr key={idx} style={styles.tableRow}>
-                    <td>{appt.name}</td>
-                    <td>{appt.type}</td>
+                    <td>{appt.firstName}</td>
+                    <td>{appt.mobile}</td>
+                    <td>{appt.gender}</td>
                     <td>{appt.time}</td>
                   </tr>
                 ))}
@@ -114,21 +134,19 @@ const Dashboard = () => {
                 <tr style={styles.tableHeader}>
                   <th>Name</th>
                   <th>Gender</th>
-                  <th>Age</th>
-                  <th>Department</th>
+                  <th>Address</th>
+                  <th>Contact</th>
+                  <th>Blood Group</th>
                 </tr>
               </thead>
               <tbody>
-                {[
-                  { name: "Brooklyn Simmons", gender: "Male", age: "29", dept: "Cardiology" },
-                  { name: "Anthony Johnson", gender: "Male", age: "27", dept: "Neurology" },
-                  { name: "Sarah Miller", gender: "Female", age: "35", dept: "Oncology" },
-                ].map((patient, idx) => (
+                {patients.slice(0, 5).map((patient, idx) => (
                   <tr key={idx} style={styles.tableRow}>
                     <td>{patient.name}</td>
                     <td>{patient.gender}</td>
-                    <td>{patient.age}</td>
-                    <td>{patient.dept}</td>
+                    <td>{patient.address}</td>
+                    <td>{patient.contact}</td>
+                    <td>{patient.bloodGroup}</td>
                   </tr>
                 ))}
               </tbody>
@@ -138,7 +156,7 @@ const Dashboard = () => {
       </Row>
     </Container>
   );
-};  
+};
 
 // Internal CSS Styles
 const styles = {
@@ -167,6 +185,8 @@ const styles = {
     textAlign: "center",
     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
     borderRadius: "10px",
+    cursor: "pointer", // Indicate clickable action
+    transition: "background 0.3s",
   },
   greenText: {
     color: "green",
