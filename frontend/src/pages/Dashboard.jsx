@@ -110,7 +110,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {appointments.map((appt, idx) => (
+                {appointments.slice(0, 4).map((appt, idx) => (
                   <tr key={idx} style={styles.tableRow}>
                     <td>{appt.firstName}</td>
                     <td>{appt.mobile}</td>
