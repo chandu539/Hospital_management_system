@@ -25,13 +25,13 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const [patients, setPatients] = useState([]);
+  const [users, setUsers] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/patients")
-      .then(response => setPatients(response.data))
+    axios.get("http://localhost:5000/api/users")
+      .then(response => setUsers(response.data))
       .catch(error => console.error("Error fetching patients:", error));
 
     axios.get("http://localhost:5000/api/appointments")
@@ -71,7 +71,7 @@ const Dashboard = () => {
       {/* Stats Cards */}
       <Row>
         {[
-          { title: "Total Patients", value: patients.length, change: "+15%", route: "/patientlist" },
+          { title: "Total Patients", value: users.length, change: "+15%", route: "/userlist" },
           { title: "Total Appointments", value: appointments.length, change: "+10%", route: "/appointments" },
           { title: "Total Income", value: "$8,399.24", change: "+28%" },
           { title: "Total Treatments", value: "112", change: "+12%" },
@@ -140,13 +140,13 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {patients.slice(0, 5).map((patient, idx) => (
+                {users.slice(0, 5).map((user, idx) => (
                   <tr key={idx} style={styles.tableRow}>
-                    <td>{patient.name}</td>
-                    <td>{patient.gender}</td>
-                    <td>{patient.address}</td>
-                    <td>{patient.contact}</td>
-                    <td>{patient.bloodGroup}</td>
+                    <td>{user.patient_fullName}</td>
+                    <td>{user.patient_gender}</td>
+                    <td>{user.patient_address}</td>
+                    <td>{user.patient_phone}</td>
+                    <td>{user.patient_bloodGroup}</td>
                   </tr>
                 ))}
               </tbody>

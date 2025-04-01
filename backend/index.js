@@ -7,7 +7,7 @@ const path = require("path");
 const jwt = require("jsonwebtoken"); // Import JWT
 const connectDB = require("./config/db"); // Import database connection
 const doctorRoutes = require("./routes/doctorRoutes");
-const patientRoutes = require("./routes/patientRoutes");
+const userRoutes = require("./routes/userRoutes");
 const AvailabilityRoutes = require("./routes/AvailabilityRoutes"); //import route for doctor availability
 const appointmentRoutes = require('./routes/appointmentRoutes');
 
@@ -19,6 +19,7 @@ app.use(cors());
 app.use(cookieParser());
 
 // Multer for File Uploads
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/"); // Store uploaded files in 'uploads' folder
@@ -31,10 +32,10 @@ const upload = multer({ storage });
 
 // Routes
 app.use("/api/doctors", doctorRoutes);
-app.use("/api/patients", patientRoutes);
+app.use("/api/users", userRoutes);
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
 app.use("/api/availability", AvailabilityRoutes);
-app.use('/api/appointments', appointmentRoutes);
+app.use('/api/appointments', appointmentRoutes);  
 
 // Connect to MongoDB and Start Server
 connectDB().then(() => {

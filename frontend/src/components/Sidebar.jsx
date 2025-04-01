@@ -76,12 +76,6 @@ const Sidebar = () => {
             label="Doctors"
           />
 
-          <SidebarItem to="/profile" icon={<FaUserCircle />} label="Profile" />
-          <SidebarItem
-            to="/notifications"
-            icon={<FaBell />}
-            label="Notifications"
-          />
           <SidebarItem
             to="/availability"
             icon={<FaClock />}
@@ -95,7 +89,7 @@ const Sidebar = () => {
         </ul>
 
         <ul className="nav nav-pills flex-column mt-auto">
-          <SidebarItem to="/settings" icon={<FaCog />} label="Settings" />
+          <SidebarItem to="/profile" icon={<FaUserCircle />} label="Profile" />
           <SidebarItem to="/logout" icon={<FaSignOutAlt />} label="Logout" />
         </ul>
       </div>

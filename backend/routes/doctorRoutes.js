@@ -63,22 +63,25 @@ router.post("/", upload.fields([
 });
 
 // Doctor Login - JWT Authentication
+// Doctor Login - JWT Authentication
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const doctor = await Doctor.findOne({ email });
-    if (!doctor) return res.status(400).json({ error: "Invalid credentials." });
+    
+    if (!doctor) return res.status(400).json({ error: "Invalid credentials: Email not found" });
 
     const isMatch = await bcrypt.compare(password, doctor.password);
-    if (!isMatch) return res.status(400).json({ error: "Invalid credentials." });
+    if (!isMatch) return res.status(400).json({ error: "Invalid credentials: Incorrect password" });
 
     const token = jwt.sign({ id: doctor._id, email: doctor.email }, process.env.JWT_SECRET, { expiresIn: "1d" });
     res.json({ message: "Login successful!", token });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error in login:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 // 🔹 Logout Route (Invalidates Token)
 router.post("/logout", authMiddleware, (req, res) => {
@@ -90,42 +93,43 @@ router.post("/logout", authMiddleware, (req, res) => {
     }
 });
 
-// 🔹 Get Doctor by ID
 router.get("/:id", authMiddleware, async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    if (!id || id === "undefined") {
-        return res.status(400).json({ error: "Invalid doctor ID" });
-    }
+  if (!id || id === "undefined") {
+    return res.status(400).json({ error: "Invalid doctor ID" });
+  }
 
-    try {
-        const doctor = await Doctor.findById(id).select("-password"); // Exclude password field
-        if (!doctor) return res.status(404).json({ error: "Doctor not found" });
-
-        res.json(doctor);
-    } catch (error) {
-        console.error("Server Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-});
-
-// GET doctor profile (for Navbar)
-router.get("/profile", authMiddleware, async (req, res) => {
   try {
-    const doctor = await Doctor.findById(req.user.id).select("name"); // Only fetch the name
-
-    if (!doctor) {
-      return res.status(404).json({ message: "Doctor not found" });
-    }
+    const doctor = await Doctor.findById(id).select("-password"); // Exclude password field
+    if (!doctor) return res.status(404).json({ error: "Doctor not found" });
 
     res.json(doctor);
   } catch (error) {
-    console.error("Error fetching doctor profile:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Server Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// GET all doctors
+router.get("/:doctorId", authMiddleware, async (req, res) => {
+  try {
+    // Find doctor by ID
+    const doctor = await Doctor.findById(req.params.doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found" });
+    }
+
+    // Return doctor profile data
+    res.status(200).json(doctor);
+  } catch (error) {
+    console.error("Error fetching doctor profile:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+// GET all doctors for availability
 router.get("/", async (req, res) => {
   try {
     const doctors = await Doctor.find().select("name _id");

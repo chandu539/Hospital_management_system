@@ -4,11 +4,10 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Login from "./components/Login";
-import Sidebar from "./components/sidebar";
+import Sidebar from "./components/Sidebar";
 import Logout from "./pages/Logout";
 import Profile from "./pages/Profile";
 import PatientDetail from "./pages/PatientDetail";
-import PatientList from "./pages/PatientList";
 import Patients from "./pages/patients";
 import Appointments from "./pages/Appointments";
 import MedicalRecords from "./pages/MedicalRecords";
@@ -19,6 +18,7 @@ import Notifications from "./pages/Notifications";
 import Doctors from "./pages/Doctors";
 import PrescriptionPage from "./pages/PrescriptionPage";
 import "bootstrap/dist/css/bootstrap.min.css";
+import UserList from "./pages/UserList";
 
 
 
@@ -39,7 +39,7 @@ const App = () => {
           <Route path="/patient" element={<Patients/>}/>
           <Route path="/patientdetail" element={<PatientDetail/>}/>
           <Route path="/patients/:id" element={<PatientDetail />} />
-          <Route path="/patientlist" element={<PatientList/>}/>
+          <Route path="/userlist" element={<UserList/>}/>
           <Route path="/doctors" element={<Doctors/>}/>
           <Route path="/appointments" element={<Appointments/>}/>
           <Route path="/medicalrecords" element={<MedicalRecords/>}/>

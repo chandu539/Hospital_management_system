@@ -49,7 +49,7 @@ const Patients = () => {
         style={styles.button}
         onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
         onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-        onClick={() => navigate("/patientlist")}
+        onClick={() => navigate("/userlist")}
       >
         <FaUsers /> Patient List
       </button>

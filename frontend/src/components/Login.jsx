@@ -10,31 +10,30 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setMessage("");
-
+    setMessage(""); // Reset the message on each submit
     try {
       const response = await axios.post("http://localhost:5000/api/doctors/login", {
         email,
         password,
       });
-
+  
       console.log("✅ Login successful", response.data);
       alert("Login successful!");
-
-      // Store token if received
+  
+      // Check and store JWT Token and User ID in localStorage
       if (response.data.token && response.data.user) {
         localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user data properly
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("id", response.data.user._id);
       }
-      
-
-      // Redirect to Profile page
-      navigate("/profile");
+  
+      navigate("/profile");  // Navigate to profile after successful login
     } catch (error) {
       console.error("❌ Login error:", error.response?.data?.error || error.message);
       setMessage(error.response?.data?.error || "Login failed");
     }
   };
+  
 
   const styles = {
     container: {

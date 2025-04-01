@@ -2,64 +2,69 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const PatientList = () => {
-  const [patients, setPatients] = useState([]);
+const UserList = () => {
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPatients = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/patients");
-        setPatients(response.data);
+        const response = await axios.get("http://localhost:5000/api/users");
+        setUsers(response.data);
         setLoading(false);
       } catch (err) {
-        setError("Failed to fetch patients");
+        setError("Failed to fetch users");
         setLoading(false);
       }
     };
 
-    fetchPatients();
+    fetchUsers();
   }, []);
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>Patient List</h2>
+        <h2 style={styles.title}>User List</h2>
         {loading && <p style={styles.loading}>Loading...</p>}
         {error && <p style={styles.error}>{error}</p>}
-        {!loading && !error && patients.length > 0 ? (
+        {!loading && !error && users.length > 0 ? (
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>Name</th>
+                <th style={styles.th}>Full Name</th>
                 <th style={styles.th}>Gender</th>
                 <th style={styles.th}>Date of Birth</th>
-                <th style={styles.th}>Contact</th>
+                <th style={styles.th}>Phone</th>
                 <th style={styles.th}>Address</th>
                 <th style={styles.th}>Blood Group</th>
                 <th style={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {patients.map((patient) => (
-                <tr key={patient._id} style={styles.row}>
-                  <td style={styles.td} >{patient.name}</td>
-                  <td style={styles.td}>{patient.gender}</td>
-                  <td style={styles.td}>{new Date(patient.dateOfBirth).toLocaleDateString()}</td>
-                  <td style={styles.td}>{patient.contact}</td>
-                  <td style={styles.td}>{patient.address}</td>
-                  <td style={styles.td}>{patient.bloodGroup}</td>
+              {users.map((user) => (
+                <tr key={user._id} style={styles.row}>
+                  <td style={styles.td}>{user.patient_fullName}</td>
+                  <td style={styles.td}>{user.patient_gender}</td>
+                  <td style={styles.td}>{new Date(user.patient_dob).toLocaleDateString()}</td>
+                  <td style={styles.td}>{user.patient_phone}</td>
+                  <td style={styles.td}>{user.patient_address}</td>
+                  <td style={styles.td}>{user.patient_bloodGroup}</td>
                   <td style={styles.td}>
-                    <button style={styles.button} onClick={() => navigate('/prescription')}>Add Prescription</button>
+                    <button
+                      style={styles.button}
+                      onClick={() => navigate("/prescription")}
+                    >
+                      Add Prescription
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p style={styles.noRecords}>No patient records found.</p>
+          <p style={styles.noRecords}>No user records found.</p>
         )}
       </div>
     </div>
@@ -112,15 +117,6 @@ const styles = {
   row: {
     transition: "background 0.3s",
   },
-  rowHover: {
-    background: "#e6f9f6",
-  },
-  link: {
-    color: "#007bff",
-    cursor: "pointer",
-    textDecoration: "underline",
-    fontWeight: "bold",
-  },
   button: {
     background: "#10B981",
     color: "#fff",
@@ -130,9 +126,6 @@ const styles = {
     cursor: "pointer",
     transition: "0.3s",
     fontSize: "14px",
-  },
-  buttonHover: {
-    background: "#059669",
   },
   loading: {
     textAlign: "center",
@@ -152,4 +145,4 @@ const styles = {
   },
 };
 
-export default PatientList;
+export default UserList;
