@@ -7,27 +7,28 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const doctorId = localStorage.getItem("id");
     const token = localStorage.getItem("authToken");
-  
-    if (!doctorId || !token) {
-      console.error("No doctor ID or token found in localStorage");
-      navigate("/login");  // Redirect to login if no ID or token found
+    console.log("Auth Token:", token); // Debugging
+
+
+  {/*
+    if (!token) {
+      console.error("No token found in localStorage");
+      navigate("/login");
       return;
-    }
+    }*/}
   
     axios
-      .get(`http://localhost:5000/api/doctors/${doctorId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      .get(`http://localhost:5000/api/doctors/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => setDoctor(response.data))
       .catch((error) => {
         console.error("Error fetching profile:", error);
-        navigate("/login");  // Redirect to login if error occurs
+        navigate("/login");
       });
   }, []);
+  
   
 
   if (!doctor) return <p>Loading profile...</p>;

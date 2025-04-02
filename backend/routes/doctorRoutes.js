@@ -1,10 +1,11 @@
+// routes/doctorRoutes.js
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const Doctor = require("../models/Doctor");
-const { authMiddleware, logout } = require("../middleware/authMiddleware");
-const Prescription = require("../models/prescription");
+const authMiddleware = require("../middleware/authMiddleware");
+const Prescription = require("../models/Prescription");
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -19,62 +20,82 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Register Doctor
-router.post("/", upload.fields([
-  { name: "profileImage", maxCount: 1 },
-  { name: "achievements", maxCount: 10 },
-  { name: "awards", maxCount: 10 },
-]), async (req, res) => {
-  try {
-    const { name, email, password, phone, specialization, availability } = req.body;
-    
-    const profileImage = req.files["profileImage"] ? req.files["profileImage"][0].path : "";
-    
-    const achievements = JSON.parse(req.body.achievements || "[]").map((ach, index) => ({
-      title: ach.title,
-      description: ach.description,
-      image: req.files[`achievements[${index}][image]`] ? req.files[`achievements[${index}][image]`][0].path : "",
-    }));
-    
-    const awards = JSON.parse(req.body.awards || "[]").map((award, index) => ({
-      title: award.title,
-      description: award.description,
-      image: req.files[`awards[${index}][image]`] ? req.files[`awards[${index}][image]`][0].path : "",
-    }));
+router.post(
+  "/",
+  upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "achievements", maxCount: 10 },
+    { name: "awards", maxCount: 10 },
+  ]),
+  async (req, res) => {
+    try {
+      const { name, email, password, phone, specialization, availability } =
+        req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newDoctor = new Doctor({
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-      specialization,
-      availability,
-      profileImage,
-      achievements,
-      awards,
-    });
+      const profileImage = req.files["profileImage"]
+        ? req.files["profileImage"][0].path
+        : "";
 
-    await newDoctor.save();
-    res.status(201).json({ message: "Doctor profile added successfully!" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server error" });
+      const achievements = JSON.parse(req.body.achievements || "[]").map(
+        (ach, index) => ({
+          title: ach.title,
+          description: ach.description,
+          image: req.files[`achievements[${index}][image]`]
+            ? req.files[`achievements[${index}][image]`][0].path
+            : "",
+        })
+      );
+
+      const awards = JSON.parse(req.body.awards || "[]").map(
+        (award, index) => ({
+          title: award.title,
+          description: award.description,
+          image: req.files[`awards[${index}][image]`]
+            ? req.files[`awards[${index}][image]`][0].path
+            : "",
+        })
+      );
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newDoctor = new Doctor({
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        specialization,
+        availability,
+        profileImage,
+        achievements,
+        awards,
+      });
+
+      await newDoctor.save();
+      res.status(201).json({ message: "Doctor profile added successfully!" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
   }
-});
+);
 
-// Doctor Login - JWT Authentication
 // Doctor Login - JWT Authentication
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const doctor = await Doctor.findOne({ email });
-    
-    if (!doctor) return res.status(400).json({ error: "Invalid credentials: Email not found" });
+
+    if (!doctor)
+      return res.status(400).json({ error: "Invalid credentials: Email not found" });
 
     const isMatch = await bcrypt.compare(password, doctor.password);
-    if (!isMatch) return res.status(400).json({ error: "Invalid credentials: Incorrect password" });
+    if (!isMatch)
+      return res.status(400).json({ error: "Invalid credentials: Incorrect password" });
 
-    const token = jwt.sign({ id: doctor._id, email: doctor.email }, process.env.JWT_SECRET, { expiresIn: "1d" });
+    const token = jwt.sign(
+      { doctorId: doctor._id, email: doctor.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
     res.json({ message: "Login successful!", token });
   } catch (error) {
     console.error("Error in login:", error);
@@ -82,17 +103,18 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
-// 🔹 Logout Route (Invalidates Token)
+// Logout Route (Invalidates Token)
 router.post("/logout", authMiddleware, (req, res) => {
-    try {
-        logout(req, res); // Call logout function
-    } catch (error) {
-        console.error("Logout error:", error);
-        res.status(500).json({ error: "Server error during logout" });
-    }
+  try {
+    // Implement token invalidation logic here if using a token blacklist
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ error: "Server error during logout" });
+  }
 });
 
+// Get Doctor by ID
 router.get("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
@@ -101,7 +123,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 
   try {
-    const doctor = await Doctor.findById(id).select("-password"); // Exclude password field
+    const doctor = await Doctor.findById(id).select("-password");
     if (!doctor) return res.status(404).json({ error: "Doctor not found" });
 
     res.json(doctor);
@@ -111,23 +133,27 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/:doctorId", authMiddleware, async (req, res) => {
+// Get Doctor Profile
+router.get("/profile", authMiddleware, async (req, res) => {
   try {
-    // Find doctor by ID
-    const doctor = await Doctor.findById(req.params.doctorId);
+    console.log("Doctor ID from Token:", req.doctorId); // Debugging log
+
+    if (!req.doctorId) {
+      return res.status(400).json({ error: "Invalid doctor ID" });
+    }
+
+    const doctor = await Doctor.findById(req.doctorId).select("-password");
 
     if (!doctor) {
       return res.status(404).json({ error: "Doctor not found" });
     }
 
-    // Return doctor profile data
     res.status(200).json(doctor);
   } catch (error) {
     console.error("Error fetching doctor profile:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 // GET all doctors for availability
 router.get("/", async (req, res) => {
@@ -140,9 +166,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-//post the prescription data to database
-// @route POST /api/doctors/add/prescription
-router.post("/add/prescription", async (req, res) => {
+// Post the prescription data to database
+router.post("/add/prescription", authMiddleware, async (req, res) => {
   try {
     const newPrescription = new Prescription(req.body);
     await newPrescription.save();
@@ -152,7 +177,6 @@ router.post("/add/prescription", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // Fetch all prescription records
 router.get("/get/prescriptions", async (req, res) => {

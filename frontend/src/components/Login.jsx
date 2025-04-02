@@ -16,23 +16,23 @@ const Login = () => {
         email,
         password,
       });
-  
+
       console.log("✅ Login successful", response.data);
       alert("Login successful!");
-  
-      // Check and store JWT Token and User ID in localStorage
-      if (response.data.token && response.data.user) {
+
+      // Check and store JWT Token in localStorage
+      if (response.data.token) {
         localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        localStorage.setItem("id", response.data.user._id);
+        navigate("/"); // Navigate to profile after successful login
+      } else {
+        setMessage("Login failed: No token received");
       }
-  
-      navigate("/profile");  // Navigate to profile after successful login
     } catch (error) {
       console.error("❌ Login error:", error.response?.data?.error || error.message);
       setMessage(error.response?.data?.error || "Login failed");
     }
   };
+
   
 
   const styles = {
